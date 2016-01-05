@@ -17,20 +17,24 @@ namespace ChimeraVirtualAds
 	{
 		private static Hashtable imageTextureAds = new Hashtable();
 		private static bool isUpdateRequired = true;
-		public static void addImageTextureAd(ImageTextureAd imageTextureAd){
+		public static void AddImageTextureAd(ImageTextureAd imageTextureAd){
 			imageTextureAds.Add (imageTextureAd.GetAdId(), imageTextureAd);
 			isUpdateRequired = true;
 		}
 
-		public static void addImageTextureInstance(String adId, String instanceName){
+		public static void AddImageTextureInstance(String adId, AdInstance instance){
 			ImageTextureAd ad = (ImageTextureAd)imageTextureAds[adId];
-			//ad.addInstance (instanceName);
+			ad.AddInstance(instance);
 		}
 
-		public static void start(){
+		public static void Start(){
 		}
 
-		public static void update() {
+		public static ImageTextureAd GetImageTextureAd(String adId){
+			return (ImageTextureAd)imageTextureAds [adId];
+		}
+
+		public static void Update() {
 			if (!isUpdateRequired)
 				return;
 			isUpdateRequired = false;
@@ -38,6 +42,7 @@ namespace ChimeraVirtualAds
 				ImageTextureAd ad = (ImageTextureAd)entry.Value;
 				if(!ad.IsTextureGenerated()){
 					ad.GenerateTexture();
+					ad.DisplayTexture();
 					isUpdateRequired = true;
 				}
 			}

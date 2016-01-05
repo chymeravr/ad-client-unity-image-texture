@@ -13,9 +13,10 @@ namespace ChimeraVirtualAds.Implementation.Managed
 			this.unityListener = adListener;
 			adService = new ImageTextureAdService (this, adId);
 		}
-
+		public void AddInstance(IAdInstance unityInstance){
+			AdInstance instance = new AdInstance (unityInstance.GetInstanceId ());
+		}
 		public void LoadAd(){
-			//adService.LoadAd (adId);
 			adService.LoadAd ();
 		}
 		public bool IsAdLoaded(){
