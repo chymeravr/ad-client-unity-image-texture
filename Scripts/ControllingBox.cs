@@ -11,7 +11,7 @@ public class ControllingBox : MonoBehaviour, AdListener {
 	private Renderer rendererObject;
 	private Texture2D tex;
 	private bool isImageLoaded = false;
-	ImageTextureAdService adClient;
+	ImageTextureAd adClient;
 	// Use this for initialization
     /*IEnumerator Start()
     {
@@ -25,7 +25,7 @@ public class ControllingBox : MonoBehaviour, AdListener {
     }*/
 	void Start(){
 		tex = new Texture2D (2, 2);
-		adClient = new ImageTextureAdService (this, "asdfds");
+		adClient = new ImageTextureAd (this, "asdfds");
 		adClient.LoadAd ();
 		rendererObject = GetComponent<Renderer> ();
 	}

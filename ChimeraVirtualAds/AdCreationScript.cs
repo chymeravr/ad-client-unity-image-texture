@@ -2,26 +2,31 @@
 using System.Collections;
 using ChimeraVirtualAds.API;
 using ChimeraVirtualAds;
+using UnityEngine.VR;
 
 public class AdCreationScript : MonoBehaviour {
 	public string adId;
 	public string adInstanceId;
 	private ImageTextureAd ad;
-	private bool isTextureApplied = false;
+	private AdInstance instance;
+
 	// Use this for initialization
-	void Start () {
-		ImageTextureAd imageTextureAd = AdManager.GetImageTextureAd (adId);
-		if (imageTextureAd == null) {
+	void Awake () {
+		ImageTextureAd tempAdObject = AdManager.GetImageTextureAd (adId);
+		if (tempAdObject == null) {
 			ad = new ImageTextureAd (adId);
 			ad.OnAdLoadFailed += HandleOnAdLoadFailed;
 			ad.OnAdLoaded += HandleOnAdLoaded;
 			ad.LoadAd ();
 			AdManager.AddImageTextureAd (ad);
 		} else {
-			ad = imageTextureAd;
+			ad = tempAdObject;
 		}
-		AdInstance instance = new AdInstance (adInstanceId, gameObject);
-		ad.AddInstance (instance);
+		instance = ad.CreateInstance (adInstanceId, gameObject, Camera.main);
+	}
+
+	void Start(){
+		AdManager.Update (instance);
 	}
 
 	void HandleOnAdLoaded (object sender, System.EventArgs e)
@@ -34,13 +39,9 @@ public class AdCreationScript : MonoBehaviour {
 		co.chimeralabs.ads.managed.AdLoadFailedArgs args = (co.chimeralabs.ads.managed.AdLoadFailedArgs) e;
 		Debug.Log ("OnAdLoadFailed" + args.getErrorMessage());
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		AdManager.Update ();
-		if(!isTextureApplied && ad.IsTextureGenerated())
-		{
-			isTextureApplied = true;
-		}
+		AdManager.Update (instance);
 	}
 }
