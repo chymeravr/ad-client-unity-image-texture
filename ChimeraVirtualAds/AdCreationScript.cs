@@ -1,47 +1,45 @@
 ﻿using UnityEngine;
 using System.Collections;
-using ChimeraVirtualAds.API;
 using ChimeraVirtualAds;
 using UnityEngine.VR;
 
 public class AdCreationScript : MonoBehaviour {
-	public string adId;
+	public string adUnitId;
 	public string adInstanceId;
-	private ImageTextureAd ad;
-	private AdInstance instance;
-
+	public int nDistinctAds = 1;
+	private ImageTextureAdInstanceUnity instance;
+	private bool isAdReady = false;
+	private bool isAdDisplayed = false;
 	// Use this for initialization
 	void Awake () {
-		ImageTextureAd tempAdObject = AdManager.GetImageTextureAd (adId);
-		if (tempAdObject == null) {
-			ad = new ImageTextureAd (adId);
-			ad.OnAdLoadFailed += HandleOnAdLoadFailed;
-			ad.OnAdLoaded += HandleOnAdLoaded;
-			ad.LoadAd ();
-			AdManager.AddImageTextureAd (ad);
-		} else {
-			ad = tempAdObject;
-		}
-		instance = ad.CreateInstance (adInstanceId, gameObject, Camera.main);
+		instance = new ImageTextureAdInstanceUnity (gameObject, Camera.main, this.adUnitId, this.adInstanceId);
+		instance.OnAdLoaded += HandleOnAdLoaded;
+		instance.OnAdLoadFailed += HandleOnAdLoadFailed;
+		AdManager.RegisterImageTextureAdUnit (instance, nDistinctAds);
 	}
-
+	
 	void Start(){
-		AdManager.Update (instance);
+		instance.Update ();
 	}
-
+	
 	void HandleOnAdLoaded (object sender, System.EventArgs e)
 	{
+		isAdReady = true;
 		Debug.Log ("OnAdLoaded");
 	}
-
+	
 	void HandleOnAdLoadFailed (object sender, System.EventArgs e)
 	{
-		co.chimeralabs.ads.managed.AdLoadFailedArgs args = (co.chimeralabs.ads.managed.AdLoadFailedArgs) e;
-		Debug.Log ("OnAdLoadFailed" + args.getErrorMessage());
+		co.chimeralabs.ads.managed.AdUnitFailedArgs args = (co.chimeralabs.ads.managed.AdUnitFailedArgs) e;
+		if (args.errorCode == co.chimeralabs.ads.managed.AdUnitFailedArgs.ErrorCode.FEW_ADS_LOADED) {
+			Debug.Log ("(AdUnit:"+args.adUnitId+")Few ads Loaded. Error Message " + args.errorMessage);
+		}else if (args.errorCode == co.chimeralabs.ads.managed.AdUnitFailedArgs.ErrorCode.NO_AD_LOADED) {
+			Debug.Log ("(AdUnit:"+args.adUnitId+")No ad Loaded. Error Message:" + args.errorMessage);
+		}
 	}
-
+	
 	// Update is called once per frame
 	void Update () {
-		AdManager.Update (instance);
+		instance.Update ();
 	}
 }
