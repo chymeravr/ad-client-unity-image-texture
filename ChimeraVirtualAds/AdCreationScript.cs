@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 
 public class AdCreationScript : MonoBehaviour {
+	public string appId;
 	public string adUnitId;
 	public string adInstanceId;
 	public int nDistinctAds = 1;
@@ -17,7 +18,7 @@ public class AdCreationScript : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		starttime = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
-		AdManagerUnity.Startup ();
+		AdManagerUnity.Startup (this.appId);
 		instance = new ImageTextureAdInstanceUnity (gameObject, Camera.main, this.adUnitId, this.adInstanceId);
 		instance.OnAdLoaded += HandleOnAdLoaded;
 		instance.OnAdLoadFailed += HandleOnAdLoadFailed;
